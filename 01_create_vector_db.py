@@ -1,6 +1,6 @@
-from scraping import scrape_urls
+from scrape_insee import scrape_urls
 from chunking import create_chunks
-from generate_embeddings import embed_and_store_chunks
+from embed_and_store import embed_and_store_chunks
 
 urls = [
     'https://www.insee.fr/fr/statistiques/8569094',
