@@ -1,17 +1,18 @@
 import os
 from dotenv import load_dotenv
-from langchain_core.prompts import ChatPromptTemplate
 from langchain_openai import ChatOpenAI
+from langchain_core.prompts import ChatPromptTemplate
 
-# Chargement API Key
+# Chargement de la clé
 load_dotenv()
 OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
 MODEL_NAME = "gpt-4o"
 
-# Création du modèle LLM OpenAI
+# Chargement du modèle LLM OpenAI
 llm = ChatOpenAI(
     model_name=MODEL_NAME,
-    temperature=0)
+    temperature=0
+)
 
 # Création d'un prompt simple avec placeholder {question}
 prompt = ChatPromptTemplate.from_messages(
@@ -20,7 +21,7 @@ prompt = ChatPromptTemplate.from_messages(
             "system",
             "Tu es un assistant expert en statistiques économiques françaises (Insee).",
         ),
-        ("human", "{question}"),
+        ("human", "{input}"),
     ]
 )
 
@@ -36,7 +37,7 @@ def chat_simple():
             break
 
         response = chain.invoke({
-            "question": question
+            "input": question
         })
         print(f"\n🤖 Réponse : {response.content}\n")
 

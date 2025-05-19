@@ -1,11 +1,10 @@
 import os
 from dotenv import load_dotenv
 from langchain_core.prompts import ChatPromptTemplate
+from langchain_core.runnables import RunnableLambda
 from langchain_openai import ChatOpenAI
-from langchain.chains.combine_documents import create_stuff_documents_chain
-from langchain.chains import create_retrieval_chain
 
-from retrieval import get_retriever
+from retriever import get_retriever
 
 # Chargement API Key
 load_dotenv()
@@ -39,12 +38,17 @@ prompt = ChatPromptTemplate.from_messages(
     ]
 )
 
-document_chain = create_stuff_documents_chain(llm, prompt)
 retriever = get_retriever()
-rag_chain = create_retrieval_chain(retriever, document_chain)
+
+map_input = RunnableLambda(lambda x: {
+    "input": x["input"],
+    "context": retriever.invoke(x["input"])
+})
+
+rag_chain = map_input | prompt | llm
 
 
-def chat_simple():
+def chat_rag():
     print("\n💬 Chat simple avec RAG. Tapez 'exit' pour sortir.\n")
     while True:
         question = input("Votre question : ")
@@ -59,24 +63,9 @@ def chat_simple():
         # Affichage de la réponse générée
         print("\n🤖 Réponse :")
         print("-" * 60)
-        print(response["answer"])
+        print(response.content)
         print("-" * 60)
-
-        # Affichage des sources (contexte)
-        sources = response.get("context", [])
-        if sources:
-            print("\n📚 Sources utilisées :")
-            for i, doc in enumerate(sources, 1):
-                titre = doc.metadata.get("titre", "Sans titre")
-                sous_titre = doc.metadata.get("sous_titre", "")
-                print(f"\nSource {i}:")
-                print(f"📄 {titre}")
-                if sous_titre:
-                    print(f"   📝 {sous_titre}")
-                print(f"   🔎 Extrait : {doc.page_content[:300].strip()}...")
-        else:
-            print("\n⚠️ Aucun document de contexte trouvé.")
 
 
 if __name__ == "__main__":
-    chat_simple()
+    chat_rag()

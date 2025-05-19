@@ -12,52 +12,45 @@ urls = [
 ]
 
 
-def scrape_page(url, cache=False):
+def scrape_page(url):
     with sync_playwright() as p:
         browser = p.chromium.launch(headless=True)
         page = browser.new_page()
         page.goto(url, wait_until="networkidle")
-
         content = page.content()
         browser.close()
 
     soup = BeautifulSoup(content, "html.parser").find("main")
 
-    # Titre publication
+    # Titres publication
     titre_principal = soup.find('h1', class_='titre-principal')
     titre_publication = titre_principal.find('span', class_='titre-titre').get_text(strip=True)
     sous_titre_publication = titre_principal.find('span', class_='sous-titre').get_text(strip=True)
 
     # Corps publication
     corps_publication_div = soup.find('div', class_='corps-publication')
-
     contenu_elements = corps_publication_div.select('h2, p')
 
     contenu = []
     for elem in contenu_elements:
-        if elem.name.startswith('h'):
-            texte_titre = elem.get_text(strip=True)
-            contenu.append(f"\n{texte_titre}\n{'-' * len(texte_titre)}")
-        else:  # paragraphes
-            texte_paragraphe = elem.get_text(strip=True)
-            if texte_paragraphe:
-                contenu.append(texte_paragraphe)
-
+        if elem.name == 'h2':
+            section = elem.get_text(strip=True)
+            contenu.append(f"\nSection : {section}")
+        else:
+            contenu.append(elem.get_text(strip=True))
     texte_final = '\n'.join(contenu)
 
-    document = {
+    return {
         'titre': titre_publication,
         'sous_titre': sous_titre_publication,
         'contenu': texte_final
     }
 
-    return document
-
 
 def scrape_urls(urls, do_cache=False, use_cache=False):
     documents = []
 
-    if use_cache and CACHE_PATH.exists():
+    if use_cache:
         print("🕒 Récupération des publications depuis le cache...")
         with open(CACHE_PATH, "r", encoding="utf-8") as f:
             documents = json.load(f)
@@ -79,8 +72,8 @@ def scrape_urls(urls, do_cache=False, use_cache=False):
 
 if __name__ == "__main__":
     documents = []
-    documents = scrape_urls(urls, do_cache=True)
-    # documents = scrape_urls(urls, use_cache=True)
+    # documents = scrape_urls(urls, do_cache=True)
+    documents = scrape_urls(urls, use_cache=True)
 
     print("\n📚 Résultat du scraping :\n" + "=" * 80)
 

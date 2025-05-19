@@ -35,7 +35,6 @@ def get_retriever():
     return retriever
 
 
-# Test interactif
 if __name__ == "__main__":
     print("🔎 Test de retrieval depuis ChromaDB (tapez 'exit' pour quitter)")
     while True:

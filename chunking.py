@@ -1,4 +1,4 @@
-from langchain.text_splitter import TokenTextSplitter
+from langchain_text_splitters import TokenTextSplitter
 
 text_splitter = TokenTextSplitter(
     chunk_size=300,     # taille du chunk (en tokens)
@@ -18,7 +18,6 @@ def create_chunks(documents):
                 'contenu': chunk,
                 'titre': doc['titre'],
                 'sous_titre': doc['sous_titre']
-                # Tu pourrais même ajouter l'URL ici si tu le souhaites !
             }
             all_chunks.append(chunk_with_meta)
 
@@ -37,4 +36,4 @@ if __name__ == "__main__":
 
     # Vérification simple du résultat
     for i, chunk in enumerate(all_chunks[:5], 1):
-        print(f"Chunk {i} [Publication : {chunk['titre']}]\n{'='*60}\n{chunk['contenu']}\n{'='*60}")
+        print(f"Chunk {i} [Publication : {chunk['titre']}]\n{'-'*60}\n{chunk['contenu']}\n{'-'*60}")
