@@ -6,14 +6,17 @@ from langchain_openai import ChatOpenAI
 
 from retriever import get_retriever
 
-# Chargement API Key
+# Chargement des variables d'environnement
 load_dotenv()
-OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
-MODEL_NAME = "gpt-4o"
+LLM_API_KEY = os.environ.get("LLM_API_KEY")
+LLM_MODEL_NAME = os.environ.get("LLM_MODEL_NAME")
+LLM_BASE_URL = os.environ.get("LLM_BASE_URL")
 
 # Création du modèle LLM OpenAI
 llm = ChatOpenAI(
-    model_name=MODEL_NAME,
+    model_name=LLM_MODEL_NAME,
+    api_key=LLM_API_KEY,
+    base_url=LLM_BASE_URL,
     temperature=0)
 
 # Création d'un prompt simple avec placeholder {question}

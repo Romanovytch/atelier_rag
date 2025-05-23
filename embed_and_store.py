@@ -7,11 +7,13 @@ from dotenv import load_dotenv
 load_dotenv()
 
 EMBEDDING_API_KEY = os.environ.get("EMBEDDING_API_KEY")
-MODEL_NAME = "text-embedding-3-small"
-CHROMA_PATH = "./chroma_db"
+EMBEDDING_MODEL_NAME = os.environ.get("EMBEDDING_MODEL_NAME")
+EMBEDDING_MODEL_URL = os.environ.get("EMBEDDING_MODEL_URL")
+CHROMA_PATH = "./chroma_db"  # chemin pour notre base vectorielle
 
 embedding_model = OpenAIEmbeddings(
-    model=MODEL_NAME,
+    model=EMBEDDING_MODEL_NAME,
+    openai_api_base=EMBEDDING_MODEL_URL,
     openai_api_key=EMBEDDING_API_KEY
 )
 
